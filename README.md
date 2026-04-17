@@ -1,6 +1,6 @@
-# REDXBOT ULTRA — Frontend
+# TEDDY-XMD — Frontend
 
-Ultra-professional dashboard for REDXBOT ULTRA.
+Ultra-professional dashboard for TEDDY-XMD.
 
 ## Deploy to Vercel (Recommended)
 
@@ -29,7 +29,5 @@ Then open `http://localhost:8080`
 - 🌙 Ultra dark professional UI
 
 ## Built by
-- **Abdul Rehman Rajpoot** — Lead Developer
+- **Teddy Tech Hub** — Lead Developer
 - **Muzamil Khan** — Co-Developer
-- YouTube: https://youtube.com/@rootmindtech
-- Channel: https://whatsapp.com/channel/0029VbCPnYf96H4SNehkev10
