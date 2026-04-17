@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>REDXBOT ULTRA — One‑Click Pairing</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050508;--bg2:#0c0c14;--bg3:#13131f;--bg4:#1a1a2a;
+  --border:rgba(255,60,0,0.15);--border2:rgba(255,255,255,0.06);
+  --red:#ff3c00;--red2:#ff6a35;--gold:#ffb800;
+  --text:#f0ede8;--muted:#6b6880;--green:#00ff88;
+  --card:rgba(13,13,20,0.95);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh}
+nav{position:sticky;top:0;background:rgba(5,5,8,0.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:62px}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--red);cursor:pointer}
+.nav-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--red),var(--red2));border-radius:8px;display:flex;align-items:center;justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;font-weight:700;cursor:pointer;border:none}
+.btn-primary{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
+.btn-secondary{background:rgba(255,255,255,0.07);color:var(--text);border:1px solid rgba(255,255,255,0.1)}
+.pair-wrap{max-width:520px;margin:60px auto;padding:24px}
+.pair-box{background:var(--bg3);border:1px solid var(--border);border-radius:22px;padding:36px}
+.pair-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--red),var(--red2));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 16px}
+.pair-header{text-align:center;margin-bottom:28px}
+.code-box{background:rgba(255,60,0,.06);border:2px solid rgba(255,60,0,.4);border-radius:16px;padding:28px;text-align:center;cursor:pointer}
+.code-val{font-family:'Space Mono',monospace;font-size:2.4rem;font-weight:700;color:var(--red);letter-spacing:.2em}
+.alert{padding:12px 16px;border-radius:10px;margin:12px 0;display:none}
+.alert.show{display:block}
+.alert.error{background:rgba(255,50,50,.08);border:1px solid rgba(255,80,80,.25);color:#ff7070}
+.alert.success{background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);color:var(--green)}
+.alert.info{background:rgba(255,184,0,.06);border:1px solid rgba(255,184,0,.2);color:var(--gold)}
+.loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.15);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast-wrap{position:fixed;top:72px;right:20px;z-index:9999}
+.toast{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 18px;margin-bottom:8px;animation:toastIn .3s}
+@keyframes toastIn{from{transform:translateX(50px);opacity:0}to{transform:translateX(0);opacity:1}}
+.step-list{list-style:none;margin:20px 0;counter-reset:step}
+.step-list li{counter-increment:step;padding:12px 12px 12px 50px;border-left:1px dashed rgba(255,60,0,.25);margin-left:18px}
+.step-list li::before{content:counter(step);position:absolute;left:-18px;width:34px;height:34px;background:var(--bg4);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center}
+@media(max-width:768px){.pair-box{padding:24px}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo" onclick="location.reload()">
+    <div class="nav-logo-icon">🔥</div>
+    <span>REDXBOT <strong style="color:var(--red)">ULTRA</strong></span>
+  </div>
+  <div class="nav-live-dot"></div>
+</nav>
+
+<div class="pair-wrap">
+  <div class="pair-box">
+    <div class="pair-header">
+      <div class="pair-icon">🔗</div>
+      <h2>Pair Your Bot</h2>
+      <p>Enter your WhatsApp number → get code → link device</p>
+    </div>
+    <div id="pairAlert" class="alert"></div>
+    <div id="pairForm">
+      <input type="tel" id="pairNumber" placeholder="923001234567" 
+             style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);color:white;padding:14px;border-radius:10px;margin-bottom:16px;font-size:1rem">
+      <button class="btn btn-primary" style="width:100%" onclick="doPair()" id="pairBtn">⚡ Get Pairing Code</button>
+    </div>
+    <div id="pairCodeSection" style="display:none; margin-top:24px">
+      <div class="code-box" onclick="copyCode()">
+        <div class="code-val" id="codeVal">- - - - - - - -</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:8px">tap to copy</div>
+      </div>
+      <button class="btn btn-secondary" style="width:100%;margin-top:16px" onclick="resetPair()">New Number</button>
+    </div>
+    <hr style="margin:24px 0;border-color:var(--border)">
+    <div><strong>How to pair:</strong> Open WhatsApp → Settings → Linked Devices → Link with phone number → Enter the 8-digit code.</div>
+  </div>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ========== HARDCODED BACKEND URL ==========
+const BACKEND_URL = 'https://minibot-751a1de38187.herokuapp.com';
+
+async function doPair() {
+  const number = document.getElementById('pairNumber').value.trim().replace(/\D/g, '');
+  const alertDiv = document.getElementById('pairAlert');
+  const btn = document.getElementById('pairBtn');
+
+  if (!number || number.length < 10) {
+    alertDiv.className = 'alert show error';
+    alertDiv.innerText = '❌ Enter a valid number (e.g. 923001234567)';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loader"></span> Requesting code...';
+  alertDiv.className = 'alert show info';
+  alertDiv.innerText = '⏳ Connecting to backend...';
+
+  // Try multiple endpoints in order
+  const endpoints = [
+    { method: 'GET', url: `${BACKEND_URL}/code?number=${number}`, body: null },
+    { method: 'POST', url: `${BACKEND_URL}/api/pair`, body: { number: number } },
+    { method: 'POST', url: `${BACKEND_URL}/pair`, body: { number: number } }
+  ];
+
+  let lastError = null;
+
+  for (const ep of endpoints) {
+    try {
+      const options = {
+        method: ep.method,
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(30000)
+      };
+      if (ep.body) options.body = JSON.stringify(ep.body);
+      
+      const response = await fetch(ep.url, options);
+      let data;
+      const text = await response.text();
+      try { data = JSON.parse(text); } catch { data = { raw: text }; }
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${text.slice(0, 100)}`);
+
+      // Extract code from response
+      const code = data.code || data.pairingCode || data.pairCode || data.pairing_code;
+      if (code) {
+        // Success
+        document.getElementById('pairForm').style.display = 'none';
+        document.getElementById('pairCodeSection').style.display = 'block';
+        document.getElementById('codeVal').innerText = code;
+        await navigator.clipboard.writeText(code);
+        toast('✅ Code copied!', 'success');
+        alertDiv.className = 'alert show success';
+        alertDiv.innerText = `Code ${code} generated! Enter it in WhatsApp → Linked Devices.`;
+        return;
+      } else {
+        throw new Error('No code in response: ' + JSON.stringify(data).slice(0, 200));
+      }
+    } catch (err) {
+      lastError = err;
+      console.warn(`Endpoint ${ep.method} ${ep.url} failed:`, err.message);
+      // Continue to next endpoint
+    }
+  }
+
+  // All endpoints failed
+  alertDiv.className = 'alert show error';
+  alertDiv.innerText = `❌ All pairing methods failed. Last error: ${lastError?.message || 'Unknown'}. Check backend URL.`;
+  btn.disabled = false;
+  btn.innerHTML = '⚡ Get Pairing Code';
+}
+
+function copyCode() {
+  const code = document.getElementById('codeVal').innerText;
+  navigator.clipboard.writeText(code);
+  toast(`Copied: ${code}`, 'success');
+}
+
+function resetPair() {
+  document.getElementById('pairForm').style.display = 'block';
+  document.getElementById('pairCodeSection').style.display = 'none';
+  document.getElementById('pairAlert').classList.remove('show');
+  document.getElementById('pairNumber').value = '';
+  const btn = document.getElementById('pairBtn');
+  btn.disabled = false;
+  btn.innerHTML = '⚡ Get Pairing Code';
+}
+
+function toast(msg, type) {
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerText = msg;
+  wrap.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+</script>
+</body>
+</html>
